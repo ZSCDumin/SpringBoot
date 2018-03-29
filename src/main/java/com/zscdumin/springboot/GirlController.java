@@ -21,6 +21,8 @@ import java.util.Optional;
 public class GirlController {
     @Autowired
     private GirlRepository girlRepository;
+    @Autowired
+    private GirlService girlService;
 
     /**
      * 查询所有女生列表
@@ -87,4 +89,13 @@ public class GirlController {
         girlRepository.deleteById(id);
     }
 
+    @GetMapping(value = "/girls/age/{age}")
+    public List<Girl> girlListByAge(@PathVariable("age") Integer age) {
+        return girlRepository.findByAge(age);
+    }
+
+    @PutMapping(value = "/girls/two")
+    public void girlTwo() {
+        girlService.insertTwo();
+    }
 }
