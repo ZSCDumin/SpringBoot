@@ -25,6 +25,6 @@ public class GirlControllerTest {
 
     @Test
     public void girlList() throws Exception {
-        mvc.perform(MockMvcRequestBuilders.get("/girls3")).andExpect(MockMvcResultMatchers.status().isOk());
+        mvc.perform(MockMvcRequestBuilders.get("/girls")).andExpect(MockMvcResultMatchers.status().isOk());
     }
 }
