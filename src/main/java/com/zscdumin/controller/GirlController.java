@@ -1,6 +1,16 @@
-package com.zscdumin.springboot;
+package com.zscdumin.controller;
 
+
+import com.zscdumin.domain.Girl;
+import com.zscdumin.domain.Result;
+import com.zscdumin.repository.GirlRepository;
+import com.zscdumin.service.GirlService;
+import com.zscdumin.utils.ResultUtil;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -10,92 +20,91 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.Optional;
+
+import javax.validation.Valid;
 
 /**
- * Created by ZSCDumin on 2018/3/29.
- * 作者邮箱：2712220318@qq.com
+ * Created by 廖师兄
+ * 2016-11-03 23:15
  */
-
 @RestController
 public class GirlController {
+
+    private final static Logger logger = LoggerFactory.getLogger(GirlController.class);
+
     @Autowired
     private GirlRepository girlRepository;
+
     @Autowired
     private GirlService girlService;
 
     /**
      * 查询所有女生列表
      *
-     * @return List
+     * @return
      */
     @GetMapping(value = "/girls")
     public List<Girl> girlList() {
+        logger.info("girlList");
+
         return girlRepository.findAll();
     }
 
     /**
      * 添加一个女生
      *
-     * @param cupSize 罩杯
-     * @param age     年龄
-     * @return Girl
+     * @return
      */
     @PostMapping(value = "/girls")
-    public Girl girlAdd(@RequestParam("cupSize") String cupSize,
-                        @RequestParam("age") Integer age) {
-        Girl girl = new Girl();
-        girl.setCupSize(cupSize);
-        girl.setAge(age);
-        return girlRepository.save(girl);
+    public Result<Girl> girlAdd(@Valid Girl girl, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return ResultUtil.error(1, bindingResult.getFieldError().getDefaultMessage());
+        }
+
+        girl.setCupSize(girl.getCupSize());
+        girl.setAge(girl.getAge());
+
+        return ResultUtil.success(girlRepository.save(girl));
     }
 
-    /**
-     * 根据ID查找一个女生
-     *
-     * @param id id
-     * @return Girl
-     */
+    //查询一个女生
     @GetMapping(value = "/girls/{id}")
-    public Optional<Girl> girlFindOne(@PathVariable("id") Integer id) {
-        return girlRepository.findById(id);
+    public Girl girlFindOne(@PathVariable("id") Integer id) {
+        return girlRepository.findOne(id);
     }
 
-    /**
-     * 根据ID更新女生信息
-     *
-     * @param id      id
-     * @param cupSize 罩杯
-     * @param age     年龄
-     * @return Girl
-     */
+    //更新
     @PutMapping(value = "/girls/{id}")
-    public Girl girlUpdate(@PathVariable("id") Integer id, @RequestParam("cupSize") String cupSize,
+    public Girl girlUpdate(@PathVariable("id") Integer id,
+                           @RequestParam("cupSize") String cupSize,
                            @RequestParam("age") Integer age) {
         Girl girl = new Girl();
         girl.setId(id);
         girl.setCupSize(cupSize);
         girl.setAge(age);
+
         return girlRepository.save(girl);
     }
 
-    /**
-     * 根据ID删除女生
-     *
-     * @param id id
-     */
+    //删除
     @DeleteMapping(value = "/girls/{id}")
     public void girlDelete(@PathVariable("id") Integer id) {
-        girlRepository.deleteById(id);
+        girlRepository.delete(id);
     }
 
+    //通过年龄查询女生列表
     @GetMapping(value = "/girls/age/{age}")
     public List<Girl> girlListByAge(@PathVariable("age") Integer age) {
         return girlRepository.findByAge(age);
     }
 
-    @PutMapping(value = "/girls/two")
+    @PostMapping(value = "/girls/two")
     public void girlTwo() {
         girlService.insertTwo();
+    }
+
+    @GetMapping(value = "girls/getAge/{id}")
+    public void getAge(@PathVariable("id") Integer id) throws Exception {
+        girlService.getAge(id);
     }
 }
