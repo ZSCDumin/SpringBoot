@@ -11,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -44,7 +43,7 @@ public class GirlController {
      * @return
      */
     @GetMapping(value = "/girls")
-    public List<Girl> girlList() {
+    public List<Girl> girlList() throws Exception {
         logger.info("girlList");
 
         return girlRepository.findAll();
@@ -56,7 +55,7 @@ public class GirlController {
      * @return
      */
     @PostMapping(value = "/girls")
-    public Result<Girl> girlAdd(@Valid Girl girl, BindingResult bindingResult) {
+    public Result<Girl> girlAdd(@Valid Girl girl, BindingResult bindingResult) throws Exception {
         if (bindingResult.hasErrors()) {
             return ResultUtil.error(1, bindingResult.getFieldError().getDefaultMessage());
         }
@@ -69,7 +68,7 @@ public class GirlController {
 
     //查询一个女生
     @GetMapping(value = "/girls/{id}")
-    public Girl girlFindOne(@PathVariable("id") Integer id) {
+    public Girl girlFindOne(@PathVariable("id") Integer id) throws Exception {
         return girlRepository.findOne(id);
     }
 
@@ -77,7 +76,7 @@ public class GirlController {
     @PutMapping(value = "/girls/{id}")
     public Girl girlUpdate(@PathVariable("id") Integer id,
                            @RequestParam("cupSize") String cupSize,
-                           @RequestParam("age") Integer age) {
+                           @RequestParam("age") Integer age) throws Exception {
         Girl girl = new Girl();
         girl.setId(id);
         girl.setCupSize(cupSize);
@@ -87,19 +86,19 @@ public class GirlController {
     }
 
     //删除
-    @DeleteMapping(value = "/girls/{id}")
-    public void girlDelete(@PathVariable("id") Integer id) {
+    @PostMapping(value = "/girls/{id}")
+    public void girlDelete(@PathVariable("id") Integer id) throws Exception {
         girlRepository.delete(id);
     }
 
     //通过年龄查询女生列表
     @GetMapping(value = "/girls/age/{age}")
-    public List<Girl> girlListByAge(@PathVariable("age") Integer age) {
+    public List<Girl> girlListByAge(@PathVariable("age") Integer age) throws Exception {
         return girlRepository.findByAge(age);
     }
 
     @PostMapping(value = "/girls/two")
-    public void girlTwo() {
+    public void girlTwo() throws Exception {
         girlService.insertTwo();
     }
 
